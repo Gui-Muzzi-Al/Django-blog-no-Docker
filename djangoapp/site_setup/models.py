@@ -1,4 +1,6 @@
 from django.db import models
+from utils.model_validators import validate_png
+from utils.images import resize_image
 
 # Create your models here.
 class MenuLink(models.Model):
@@ -11,7 +13,7 @@ class MenuLink(models.Model):
     new_tab = models.BooleanField(default=False)
     site_setup = models.ForeignKey(
         'SiteSetup', on_delete=models.CASCADE, blank=True, null=True, 
-        default=None,
+        default=None, related_name='menu'
     )
 
     def __str__(self):
@@ -33,9 +35,23 @@ class SiteSetup(models.Model):
     show_pagination = models.BooleanField(default=True)
     show_footer = models.BooleanField(default=True)
 
+
     favicon = models.ImageField(
         upload_to='assets/favicon/%Y/%m',
-        blank=True, null=True,)
+        blank=True, null=True,
+        validators=[validate_png],  # Assuming validate_png is defined in utils/model_validators.py
+        )
+    
+    def save(self, *args, **kwargs):
+        current_favicon_name = str(self.favicon.name)
+        super().save(*args, **kwargs)
+        cover_changed = False
 
+        if self.favicon:
+            favicon_changed = current_favicon_name != self.favicon.name
+
+        if cover_changed:
+            resize_image(self.cover, 32)
+            
     def __str__(self):
         return self.title

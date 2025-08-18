@@ -1,5 +1,24 @@
-{% extends "blog/base.html" %} 
+{% extends 'blog/base.html' %}
 
 {% block content %}
-    <h1>Olá Mundo</h1>
+  <main class="main-content section-wrapper">
+    <div class="section-content-wide">
+      <div class="section-gap">
+
+        {% if page_obj %}
+          <div class="card-grid">
+            {% for post in page_obj %}
+              {% include 'blog/partials/_post-card.html' with i=forloop.counter0 %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="not-found center">
+            <h1>No posts found</h1>
+            <p>It seems we couldn't find any posts matching your criteria.
+              <a href="{% url "blog:index" %}">Home</a>
+            </p>
+        {% endif %}
+      </div>
+    </div>
+  </main>
 {% endblock content %}
