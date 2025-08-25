@@ -2,6 +2,9 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import secrets
+
+print(secrets.token_urlsafe(50))
 
 
 def main():
